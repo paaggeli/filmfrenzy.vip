@@ -4,7 +4,7 @@ export default function Home() {
       <h1 className="text-7xl">FilmFrenzy.vip</h1>
       <div className="flex">
         <input type="text" placeholder="What you want to watch?" className="input input-bordered w-full max-w-xs" />
-        <button className="btn">Let's find a movie</button>
+        <button className="btn">Lets find a movie</button>
       </div>
       <div></div>
     </main>
