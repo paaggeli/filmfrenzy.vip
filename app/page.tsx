@@ -1,9 +1,15 @@
 "use client"
 import { useState } from "react";
 
+interface MovieResult {
+  title?: string;
+  overview?: string;
+  release_date?: string;
+}
+
 export default function Home() {
-  const [textInput, setTextInput] = useState('');
-  const [results, setResults] = useState([]);
+  const [textInput, setTextInput] = useState<string>('');
+  const [results, setResults] = useState<MovieResult[]>([]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
