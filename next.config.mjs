@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+    env: {
+        TMDB_KEY: process.env.TMDB_KEY,
+    },
+};
 
 export default nextConfig;
