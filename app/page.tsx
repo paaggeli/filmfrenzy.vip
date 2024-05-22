@@ -5,7 +5,7 @@ export default function Home() {
   const [textInput, setTextInput] = useState('');
   const [results, setResults] = useState([]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const text = textInput.trim();
     if (text.length > 0) {
