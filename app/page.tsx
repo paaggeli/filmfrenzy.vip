@@ -31,7 +31,11 @@ interface ApiResponse {
 
 export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [input, setInput] = useState<string | null>(null);
+  const [requestUrl, setRequestUrl] = useState<string | null>(null); // maybe use it as useRef
+  const [result, setResult] = useState<ApiResponse |null>(null)
   const [movie, setMovie] = useState<Movie | null>(null);
+  const [movies, setMovies] = useState<ApiResult[] | null>(null);
   const [trailer, setTrailer] = useState<string | null>(null);
   const [noResultsMessage, setNoResultsMessage] = useState<string>('');
 
@@ -48,23 +52,33 @@ export default function Home() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const text = inputRef.current?.value.trim();
-    if (text && text.length > 0) {
+    if (text && (text.length > 0) && (text !== input)) {
+      setInput(text);
       const searchUrl = `https://api.themoviedb.org/3/search/multi?query=${text}&include_adult=false&language=en-US&api_key=${process.env.TMDB_KEY}`;
+      setRequestUrl(`https://api.themoviedb.org/3/search/multi?query=${text}&include_adult=false&language=en-US&`);
       fetchResults(searchUrl).then(data => {
         if (data) {
           if (data.total_results === 0) {
             setNoResultsMessage("Sorry, we couldn't find anything relevant to your search. 😞 \nWe hope you find the following suggestion interesting.");
             const trendingUrl = `https://api.themoviedb.org/3/trending/movie/week?api_key=${process.env.TMDB_KEY}`;
+            setRequestUrl(`https://api.themoviedb.org/3/trending/movie/week?`);
             fetchResults(trendingUrl).then(trendingData => {
               if (trendingData) {
-                suggestedMovie(trendingData);
+                setMovies(null);
+                setResult(trendingData);
+                suggestedMovie(trendingData.results);
               }
             });
           } else {
-            suggestedMovie(data);
+            setMovies(null);
+            setResult(data);
+            suggestedMovie(data.results);
           }
         }
       });
+    } else {
+      movies && suggestedMovie(movies);
+
     }
   };
 
@@ -73,40 +87,57 @@ export default function Home() {
   }
 
   // Get random a movie
-  const suggestedMovie = (results: ApiResponse) => {
-    const items = results.results;
-    const numberOfItems = items.length;
-    const randomItem = Math.floor(Math.random()*numberOfItems);
-    const item = items[randomItem];
-    let movieId;
-    let mediaType;
-    let movieItem;
-    
-    if (isPerson(item)) {
-      const actorMovies = item.known_for;
-      if (actorMovies && actorMovies.length > 0) {
-        const actorNumberOfMovies = actorMovies.length;
-        const randomActorMovie = Math.floor(Math.random() * actorNumberOfMovies);
-        movieId = actorMovies[randomActorMovie].id;
-        mediaType = actorMovies[randomActorMovie].media_type;
-        movieItem = actorMovies[randomActorMovie]
-      } else {
-        setNoResultsMessage("Sorry, we couldn't find a suitable movie. Please try again.");
-        return;
-      }
-    } else {
-      movieItem = item;
-      movieId = item.id;
-      mediaType = item.media_type;
-    }
-
-    if (!movieItem) {
+  const suggestedMovie = (results: ApiResult[]) => {
+    let movie = selectMovie(results);
+  
+    if (!movie) {
       setNoResultsMessage("Sorry, we couldn't find a suitable movie. Please try again.");
       return;
     }
 
+    setMovieDetails(movie);
+    getVideoUrl(movie);
+  }
+
+  const selectMovie = (items: ApiResult[]) => {
+    const numberOfitem = items.length;
+    const randomNumber = Math.floor(Math.random()*numberOfitem);
+    // select random the movie
+    const item = items.splice(randomNumber, 1)[0];
+    if ( items.length <= 3 && result && (result.page < result.total_pages) ) {
+      addMoreMovies(items, result.page);
+    } else {
+      setMovies(items);  
+    }
+    if ( !item ) return null;
+    let movieItem = isPerson(item) ? getPersonMovie(item) : item ;
+
+    return movieItem;
+  }
+
+  const addMoreMovies = (items: ApiResult[], page: number) => {
+    let searchUrl = requestUrl+'page='+(1+page)+'&api_key='+process.env.TMDB_KEY;
+    fetchResults(searchUrl).then(searchData => {
+      if ( searchData && (searchData.results.length > 0) ) {
+        setMovies([...items, ...searchData.results]);
+      }
+    });
+  }
+
+  const getPersonMovie = (item: Person) => {
+    const actorMovies = item.known_for;
+    if (actorMovies && actorMovies.length > 0) {
+      const actorNumberOfMovies = actorMovies.length;
+      const randomNumber = Math.floor(Math.random() * actorNumberOfMovies);
+      return actorMovies[randomNumber]
+    }
+    setNoResultsMessage("Sorry, we couldn't find a suitable movie. Please try again.");
+    return null;
+  }
+
+  const setMovieDetails = (movieItem: Movie) => {
     if ( (!movieItem.title && !movieItem.name) || !movieItem.overview || !movieItem.poster_path) {
-      const movieDetailsUrl =  `https://api.themoviedb.org/3/${mediaType}/${movieId}?api_key=${process.env.TMDB_KEY}`;
+      const movieDetailsUrl =  `https://api.themoviedb.org/3/${movieItem.media_type}/${movieItem.id}?api_key=${process.env.TMDB_KEY}`;
       fetchResults(movieDetailsUrl).then(movieDetails => {
         if (movieDetails) {
           setMovie(movieDetails);
@@ -115,9 +146,11 @@ export default function Home() {
     } else {
       setMovie(movieItem);
     }
+  }
 
+  const getVideoUrl = (movieItem: Movie) => {
     if (movieItem.hasOwnProperty('video')) {
-      const movieTrailersUrl =  `https://api.themoviedb.org/3/${mediaType}/${movieId}/videos?api_key=${process.env.TMDB_KEY}`;
+      const movieTrailersUrl =  `https://api.themoviedb.org/3/${movieItem.media_type}/${movieItem.id}/videos?api_key=${process.env.TMDB_KEY}`;
       fetchResults(movieTrailersUrl).then(movieTrailers => {
         if (movieTrailers.results.length === 0) {
           setTrailer(null);
