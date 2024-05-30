@@ -9,6 +9,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        'xs': '480px',
+        'md2': '792px',
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
@@ -19,5 +23,8 @@ const config: Config = {
   plugins: [
     daisyui,
   ],
+  daisyui: {
+    themes: ["dark"], // Set DaisyUI to use the dark theme
+  },
 };
 export default config;

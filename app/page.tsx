@@ -32,7 +32,7 @@ interface ApiResponse {
 export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [input, setInput] = useState<string | null>(null);
-  const [requestUrl, setRequestUrl] = useState<string | null>(null); // maybe use it as useRef
+  const [requestUrl, setRequestUrl] = useState<string | null>(null);
   const [result, setResult] = useState<ApiResponse |null>(null)
   const [movie, setMovie] = useState<Movie | null>(null);
   const [movies, setMovies] = useState<ApiResult[] | null>(null);
@@ -100,9 +100,8 @@ export default function Home() {
   }
 
   const selectMovie = (items: ApiResult[]) => {
-    const numberOfitem = items.length;
-    const randomNumber = Math.floor(Math.random()*numberOfitem);
-    // select random the movie
+    const numberOfItems = items.length;
+    const randomNumber = randomSelection(numberOfItems);
     const item = items.splice(randomNumber, 1)[0];
     if ( items.length <= 3 && result && (result.page < result.total_pages) ) {
       addMoreMovies(items, result.page);
@@ -113,6 +112,13 @@ export default function Home() {
     let movieItem = isPerson(item) ? getPersonMovie(item) : item ;
 
     return movieItem;
+  }
+
+  const randomSelection = (listLength: number) => {
+    const numberForRandomness = 2*listLength; 
+    const randomNumber = Math.floor(Math.random()*numberForRandomness);
+    if (randomNumber > listLength) return 0;
+    return randomNumber;
   }
 
   const addMoreMovies = (items: ApiResult[], page: number) => {
@@ -168,6 +174,21 @@ export default function Home() {
     }
   }
 
+  const randomMovie = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    const randomPageNumber = Math.floor(Math.random() * 500);
+    const randomMovieUrl = `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=${randomPageNumber}&sort_by=popularity.desc&api_key=${process.env.TMDB_KEY}`
+    fetchResults(randomMovieUrl).then(randomMovies => {
+      const randomNumber = Math.floor(Math.random() * randomMovies.results.length);
+      const randomMovie = randomMovies.results[randomNumber];
+      if (randomMovie) {
+        setMovie(randomMovie);
+      } else {
+        setNoResultsMessage("Sorry, we couldn't find a suitable movie. Please try again.");
+      }
+    });
+  }
+
   const closeModal = () => {
     (document.getElementById('show_trailer') as HTMLDialogElement)?.close();
     const iframe = document.querySelector('#show_trailer iframe') as HTMLIFrameElement;
@@ -178,21 +199,22 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-col items-center justify-between p-24 min-h-screen bg-gradient-to-br from-slate-900 to-transparent">
-      <h1 className="text-7xl text-center font-serif">🎞️ FilmFrenzy.vip 🎞️</h1>
-      <p className="text-center text-xl max-w-2xl mt-4">
+    <main className="flex flex-col items-center justify-between p-6 md:p-24 min-h-screen bg-gradient-to-br from-slate-900 to-transparent">
+      <h1 className="text-3xl xs:text-5xl md2:text-6xl text-center font-serif"><span className="block sm:inline-block">🎞️</span> FilmFrenzy.vip <span className="hidden sm:inline-block">🎞️</span></h1>
+      <p className="text-center text-lg md:text-xl max-w-2xl mt-4">
         Write a movie title, actor’s name, genre, or anything you want, <br />
         and I will suggest a movie or series for you to watch.
       </p>
-      <form onSubmit={handleSubmit} className="flex mt-6">
+      <form onSubmit={handleSubmit} className="flex flex-col md:flex-row mt-6 w-full max-w-xl">
         <input
           type="text"
           ref={inputRef}
           placeholder="What do you want to watch?"
-          className="input input-bordered w-full max-w-xs mr-4"
+          className="input input-bordered w-full md:max-w-xs mb-4 md:mb-0 md:mr-4"
         />
-        <button type="submit" className="btn">Let's find a movie</button>
+        <button type="submit" className="btn w-full md:w-auto">Let's find a movie</button>
       </form>
+      <a className="link link-accent mt-4 md:mt-2" onClick={randomMovie}>I'm Feeling Lucky</a>
       <div className="mt-10 w-full max-w-4xl">
         {movie ? (
           <div className="flex flex-col md:flex-row items-center gap-8">
@@ -204,32 +226,32 @@ export default function Home() {
               />
               {trailer && (
                 <>
-                <button className="btn w-52 mt-4" onClick={()=>(document.getElementById('show_trailer') as HTMLDialogElement)?.showModal()}>Watch Trailer</button>
-                <dialog id="show_trailer" className="modal">
-                  <div className="modal-box w-11/12 max-w-5xl">
-                    <form method="dialog">
-                      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeModal}>✕</button>
-                    </form>
-                    <h3 className="font-bold text-lg">{movie.title || movie.name || 'Trailer'}</h3>
-                    <div>
-                      <div style={{ padding: '56.25% 0 0 0', position: 'relative' }}>
-                        <iframe 
-                          src={trailer}
-                          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-                          allow="autoplay; fullscreen; picture-in-picture" 
-                          allowFullScreen>
-                        </iframe>
+                  <button className="btn w-52 mt-4" onClick={() => (document.getElementById('show_trailer') as HTMLDialogElement)?.showModal()}>Watch Trailer</button>
+                  <dialog id="show_trailer" className="modal">
+                    <div className="modal-box w-11/12 max-w-5xl">
+                      <form method="dialog">
+                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeModal}>✕</button>
+                      </form>
+                      <h3 className="font-bold text-lg">{movie.title || movie.name || 'Trailer'}</h3>
+                      <div>
+                        <div style={{ padding: '56.25% 0 0 0', position: 'relative' }}>
+                          <iframe 
+                            src={trailer}
+                            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                            allow="autoplay; fullscreen; picture-in-picture" 
+                            allowFullScreen>
+                          </iframe>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </dialog>
+                  </dialog>
                 </>
               )}
             </div>
             <div className="text-center md:text-left">
-              <h2 className="text-3xl">{movie.title || movie.name}</h2>
+              <h2 className="text-2xl md:text-3xl">{movie.title || movie.name}</h2>
               <p className="mt-4">{movie.overview}</p>
-              { movie.release_date && (<p className="font-bold mt-2">Release Date: {movie.release_date}</p>) }
+              {movie.release_date && (<p className="font-bold mt-2">Release Date: {movie.release_date}</p>)}
             </div>
           </div>
         ) : (
