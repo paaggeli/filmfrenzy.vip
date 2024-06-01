@@ -199,7 +199,8 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-col items-center justify-between p-6 md:p-24 min-h-screen bg-gradient-to-br from-slate-900 to-transparent">
+    <div className="flex flex-col min-h-screen">
+    <main className="flex-grow flex flex-col items-center justify-between p-6 md:p-24 bg-gradient-to-br from-slate-900 to-transparent">
       <h1 className="text-3xl xs:text-5xl md2:text-6xl text-center font-serif"><span className="block sm:inline-block">🎞️</span> FilmFrenzy.vip <span className="hidden sm:inline-block">🎞️</span></h1>
       <p className="text-center text-lg md:text-xl max-w-2xl mt-4">
         Write a movie title, actor’s name, genre, or anything you want, <br />
@@ -259,5 +260,22 @@ export default function Home() {
         )}
       </div>
     </main>
+    <footer className="w-full p-4 bg-gray-800 text-gray-400 grid grid-cols-1 md:grid-cols-3 items-center">
+      <div className="flex justify-center md:justify-start items-center">
+        <a href="https://github.com/paaggeli/filmfrenzy.vip" className="flex items-center text-gray-400 hover:text-white">
+          <img src="/github-mark-white.svg" alt="GitHub Logo" className="w-6 h-6 mr-2" />
+          Contribute on GitHub
+        </a>
+      </div>
+      <div className="my-2 md:my-0 text-center">
+        <span>Built with ❤️ by </span>
+        <a href="https://twitter.com/PanosAngel1" className="text-gray-400 hover:text-white">Panos</a>
+      </div>
+      <div className="flex justify-center md:justify-end items-center">
+        <img src="/tmdb.svg" alt="TMDB Logo" className="w-12 h-12 mr-2" />
+        <span className="text-xs">This product uses the TMDB API <br/>but is not endorsed or certified by TMDB.</span>
+      </div>
+    </footer>
+    </div>
   );
 }
