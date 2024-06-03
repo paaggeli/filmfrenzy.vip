@@ -200,7 +200,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen">
-    <main className="flex-grow flex flex-col items-center justify-between p-6 md:p-24 bg-gradient-to-br from-slate-900 to-transparent">
+    <main className="flex-grow flex flex-col items-center justify-between p-6 md:p-24 bg-gradient-to-br from-slate-900 to-transparent relative">
       <h1 className="text-3xl xs:text-5xl md2:text-6xl text-center font-serif"><span className="block sm:inline-block">🎞️</span> FilmFrenzy.vip <span className="hidden sm:inline-block">🎞️</span></h1>
       <p className="text-center text-lg md:text-xl max-w-2xl mt-4">
         Write a movie title, actor’s name, genre, or anything you want, <br />
@@ -216,7 +216,7 @@ export default function Home() {
         <button type="submit" className="btn w-full md:w-auto">Let's find a movie</button>
       </form>
       <a className="link link-accent mt-4 md:mt-2" onClick={randomMovie}>I'm Feeling Lucky</a>
-      <div className="mt-10 w-full max-w-4xl">
+      <div className="mt-10 w-full max-w-4xl mb-10">
         {movie ? (
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="flex flex-col items-center">
@@ -259,6 +259,15 @@ export default function Home() {
           <div className="text-center mt-10 whitespace-pre-line">{noResultsMessage}</div>
         )}
       </div>
+      <a className="absolute bottom-0 left-0" href="https://www.producthunt.com/posts/filmfrenzy-vip?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-filmfrenzy&#0045;vip" target="_blank">
+        <img 
+          src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=460995&theme=light" 
+          alt="FilmFrenzy&#0046;vip - Discover&#0032;your&#0032;next&#0032;favorite&#0032;movie&#0032;or&#0032;series&#0032;effortlessly&#0033; | Product Hunt" 
+          style={{width: '250px', height: '54px'}} 
+          width="250" 
+          height="54" 
+        />
+      </a>
     </main>
     <footer className="w-full p-4 bg-gray-800 text-gray-400 grid grid-cols-1 md:grid-cols-3 items-center">
       <div className="flex justify-center md:justify-start items-center">
