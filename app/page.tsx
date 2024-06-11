@@ -259,15 +259,6 @@ export default function Home() {
           <div className="text-center mt-10 whitespace-pre-line">{noResultsMessage}</div>
         )}
       </div>
-      <a className="absolute bottom-0 left-0" href="https://www.producthunt.com/posts/filmfrenzy-vip?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-filmfrenzy&#0045;vip" target="_blank">
-        <img 
-          src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=460995&theme=light" 
-          alt="FilmFrenzy&#0046;vip - Discover&#0032;your&#0032;next&#0032;favorite&#0032;movie&#0032;or&#0032;series&#0032;effortlessly&#0033; | Product Hunt" 
-          style={{width: '250px', height: '54px'}} 
-          width="250" 
-          height="54" 
-        />
-      </a>
     </main>
     <footer className="w-full p-4 bg-gray-800 text-gray-400 grid grid-cols-1 md:grid-cols-3 items-center">
       <div className="flex justify-center md:justify-start items-center">
