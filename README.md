@@ -1,5 +1,5 @@
 # FilmFrenzy.vip
-
+![](filmfrenzy-vip.jpg)
 Welcome to FilmFrenzy.vip! 🎞️ This project is a movie recommendation app where you can search for movies by title, actor, genre, or simply let the app pick a movie for you with the "I'm Feeling Lucky" feature.
 
 ## Features
